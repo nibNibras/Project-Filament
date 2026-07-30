@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Items\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -14,16 +15,16 @@ class ItemsTable
     {
         return $table
             ->columns([
-                TextColumn::make('category_id')
+                TextColumn::make('category.name')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('name')
                     ->searchable(),
-                TextColumn::make('price')
-                    ->money()
-                    ->sortable(),
                 TextColumn::make('stock')
                     ->numeric()
+                    ->sortable(),
+                TextColumn::make('price')
+                    ->money('Rp.')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -39,6 +40,7 @@ class ItemsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

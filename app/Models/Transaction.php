@@ -8,7 +8,7 @@ class Transaction extends Model
 {
     protected $guarded = [];
 
-    public function TransactionDetails()
+    public function detail()
     {
         return $this->HasMany(TransactionDetails::class);
     }
