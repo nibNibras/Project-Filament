@@ -15,6 +15,23 @@ use App\Models\Item;
 
 class TransactionForm
 {
+    public static function updateTotals( $get, $set): void
+    {
+        $details = $get('detail') ?? [];
+        
+        $total = 0;
+        foreach ($details as $detail) {
+            $total += (float) ($detail['subtotal'] ?? 0);
+        }
+    
+        $set('Total', $total);
+
+        $payTotal = (float) $get('Pay_Total');
+        $change = $payTotal - $total;
+        
+        $set('change', $change);
+    }
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -29,11 +46,18 @@ class TransactionForm
                             TextInput::make('Pay_Total')
                                 ->prefix('Rp.')
                                 ->numeric()
-                                ->inlineLabel(),
+                                ->inlineLabel()
+                                ->live(onBlur: true) // Update ketika user klik di luar input (responsif)
+                                ->afterStateUpdated(function ( $get, $set) {
+                                    // Panggil fungsi hitung kembalian
+                                    self::updateTotals($get, $set);
+                                }),
                             TextInput::make('change')
                                 ->prefix('Rp.')
                                 ->numeric()
-                                ->inlineLabel(),
+                                ->inlineLabel()
+                                ->readOnly()
+                                ->dehydrated(false),
                         ]),
                 Section::make('Cart')
                         ->schema([
@@ -50,7 +74,7 @@ class TransactionForm
                                                 $set('subtotal', $item->price);
                                             }
                                         }),
-                                    TextInput::make('stock')
+                                    TextInput::make('qty')
                                         ->numeric()
                                         ->default(1)
                                         ->minValue(1)

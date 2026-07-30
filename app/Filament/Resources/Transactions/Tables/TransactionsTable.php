@@ -15,7 +15,7 @@ class TransactionsTable
     {
         return $table
             ->columns([
-                TextColumn::make('user_id')
+                TextColumn::make('id')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('date')
